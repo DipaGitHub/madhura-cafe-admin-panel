@@ -12,13 +12,18 @@ import FAQ from "./pages/FAQ";
 import LatestUpdates from "./pages/LatestUpdates";
 import Testimonial from "./pages/Testimonial";
 import Blogs from "./pages/Blogs";
+import AboutUs from "./pages/AboutUs";
+import MenuCategories from "./pages/MenuCategories";
+import MenuCategoryForm from "./pages/MenuCategoryForm";
+import MenuItems from "./pages/MenuItems";
+import MenuItemForm from "./pages/MenuItemForm";
 import Courses from "./pages/Courses";
 import Resources from "./pages/Resources";
 import ManageCertifications from "./pages/ManageCertifications";
 import PortfolioPage from "./pages/Portfolio";
 import Pricing from "./pages/Pricing";
 import Test from "./pages/Test";
-import LogoCarousel from "./src/pages/LogoCarousel";
+import LogoCarousel from "./pages/LogoCarousel";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -26,7 +31,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
           <Route path="/" element={<Navigate to="/banners" replace />} />
           <Route path="/banners" element={<Banners />} />
@@ -42,17 +47,24 @@ const App = () => (
           <Route path="/managecertifications" element={<ManageCertifications />} />
           <Route path="/testimonials" element={<Testimonial />} />
           <Route path="/blogs" element={<Blogs />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/menu-categories" element={<MenuCategories />} />
+          <Route path="/menu-categories/new" element={<MenuCategoryForm />} />
+          <Route path="/menu-categories/edit/:id" element={<MenuCategoryForm />} />
+          <Route path="/menu-items" element={<MenuItems />} />
+          <Route path="/menu-items/new" element={<MenuItemForm />} />
+          <Route path="/menu-items/edit/:id" element={<MenuItemForm />} />
           <Route path="/updates" element={<NotFound />} />
           <Route path="/doctors" element={<NotFound />} />
           <Route path="/equipment" element={<NotFound />} />
           <Route path="/posts" element={<NotFound />} />
-          <Route path="/courses" element ={<Courses />} />
-          <Route path="/resources" element ={<Resources />} />
-          <Route path="/portfolio" element ={<PortfolioPage />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/categories" element={<NotFound />} />
           <Route path="/authors" element={<NotFound />} />
-                    <Route path="/logocarousel" element={<LogoCarousel />} />
-          
+          <Route path="/logocarousel" element={<LogoCarousel />} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

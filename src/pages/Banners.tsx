@@ -32,7 +32,7 @@ import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { apiUrl } from "@/lib/api";
+import { apiUrl, imageUrl } from "@/config/api";
 
 // --- Configuration ---
 const API_BASE_URL = apiUrl("/api/banners");
@@ -40,25 +40,28 @@ const ITEMS_PER_PAGE_OPTIONS = [5, 10, 25, 50];
 
 // --- Interfaces ---
 interface Banner {
-  id: number;
-  title: string;
+  id: string;
+  title1: string;
+  title2: string;
+  description: string;
   image_url: string;
-  is_mobile_enabled: boolean;
   created_at: string;
+  is_mobile_enabled: boolean;
 }
 
 interface ApiBannerResponse {
-  status: number;
-  message: string;
+  success: boolean;
+  message?: string;
   data: Banner[];
-  total: number;
+  count: number;
 }
 
 interface BannerFormData {
-  title: string;
+  title1: string;
+  title2: string;
+  description: string;
   image: File | null;
   enableMobileDevice: boolean;
-  // For edit form:
   existingImageUrl?: string;
 }
 
@@ -69,22 +72,26 @@ const Banners = () => {
   // --- Create State ---
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createFormData, setCreateFormData] = useState<BannerFormData>({
-    title: "",
+    title1: "",
+    title2: "",
+    description: "",
     image: null,
     enableMobileDevice: false,
   });
 
   // --- Edit State ---
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editingBannerId, setEditingBannerId] = useState<number | null>(null);
+  const [editingBannerId, setEditingBannerId] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<BannerFormData>({
-    title: "",
+    title1: "",
+    title2: "",
+    description: "",
     image: null,
     enableMobileDevice: false,
     existingImageUrl: "",
   });
 
-  const [selectedBannerIds, setSelectedBannerIds] = useState<number[]>([]);
+  const [selectedBannerIds, setSelectedBannerIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[1]);
 
@@ -132,8 +139,8 @@ const Banners = () => {
   // --- API Handlers ---
 
   const handleCreate = async () => {
-    if (!createFormData.title || !createFormData.image) {
-      toast.error("Title and Image are required.");
+    if (!createFormData.title1 || !createFormData.image) {
+      toast.error("Main Title and Image are required.");
       return;
     }
 
@@ -142,7 +149,9 @@ const Banners = () => {
     setUploadProgress(0);
 
     const formData = new FormData();
-    formData.append('title', createFormData.title);
+    formData.append('title1', createFormData.title1);
+    formData.append('title2', createFormData.title2);
+    formData.append('description', createFormData.description);
     formData.append('image', createFormData.image);
     formData.append('enableMobileDevice', String(createFormData.enableMobileDevice));
 
@@ -150,20 +159,19 @@ const Banners = () => {
       const response = await fetch(`${API_BASE_URL}/create`, {
         method: 'POST',
         body: formData,
+        // Don't set Content-Type header manually for FormData, browser sets it with boundary
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
 
       if (!response.ok) {
         const errorResult = await response.json();
         throw new Error(errorResult.error || `Failed with status: ${response.status}`);
       }
-
+      
       setUploadProgress(100);
-
       toast.success("Banner created successfully!");
-
       setIsCreateOpen(false);
-      setCreateFormData({ title: "", image: null, enableMobileDevice: false });
-
+      setCreateFormData({ title1: "", title2: "", description: "", image: null, enableMobileDevice: false });
       await fetchBanners();
 
     } catch (err) {
@@ -177,8 +185,8 @@ const Banners = () => {
   };
 
   const handleUpdate = async () => {
-    if (!editingBannerId || !editFormData.title) {
-      toast.error("Title is required for update.");
+    if (!editingBannerId || !editFormData.title1) {
+      toast.error("Main Title is required for update.");
       return;
     }
 
@@ -187,8 +195,9 @@ const Banners = () => {
     setUploadProgress(0);
 
     const formData = new FormData();
-    formData.append('title', editFormData.title);
-    // Only append image if a new one was selected
+    formData.append('title1', editFormData.title1);
+    formData.append('title2', editFormData.title2);
+    formData.append('description', editFormData.description);
     if (editFormData.image) {
       formData.append('image', editFormData.image);
     }
@@ -198,6 +207,7 @@ const Banners = () => {
       const response = await fetch(`${API_BASE_URL}/update/${editingBannerId}`, {
         method: 'PUT',
         body: formData,
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
 
       if (!response.ok) {
@@ -206,11 +216,8 @@ const Banners = () => {
       }
 
       setUploadProgress(100);
-
       toast.success("Banner updated successfully!");
-
       setIsEditOpen(false);
-
       await fetchBanners();
 
     } catch (err) {
@@ -223,43 +230,21 @@ const Banners = () => {
     }
   };
 
-  const handleEditOpen = useCallback(async (id: number) => {
-    setIsProcessing(true);
-    setEditingBannerId(id);
-    setEditFormData({ title: "", image: null, enableMobileDevice: false, existingImageUrl: "" });
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/${id}`);
-
-      if (!response.ok) {
-        const errorResult = await response.json();
-        throw new Error(errorResult.error || `Failed to fetch banner data.`);
-      }
-
-      const result = await response.json();
-      const banner: Banner = result.data;
-
-      setEditFormData({
-        title: banner.title,
-        image: null, // Always start with no new image selected
-        enableMobileDevice: banner.is_mobile_enabled,
-        existingImageUrl: banner.image_url,
-      });
-
-      setIsEditOpen(true);
-
-    } catch (err) {
-      console.error('Error opening edit modal:', err);
-      const message = err instanceof Error ? err.message : "Failed to load banner for editing.";
-      toast.error(message);
-    } finally {
-      setIsProcessing(false);
-    }
-
-  }, []); // Depend on nothing for stability
+  const handleEditOpen = useCallback((banner: any) => {
+    setEditingBannerId(banner.id);
+    setEditFormData({
+      title1: banner.title1,
+      title2: banner.title2 || "",
+      description: banner.description || "",
+      image: null,
+      enableMobileDevice: banner.is_mobile_enabled,
+      existingImageUrl: banner.image_url,
+    });
+    setIsEditOpen(true);
+  }, []);
 
   // The other handlers (delete, toggle, etc.) remain the same...
-  const handleDeleteSelected = useCallback(async (idsToDelete: number[] = selectedBannerIds) => {
+  const handleDeleteSelected = useCallback(async (idsToDelete: string[] = selectedBannerIds) => {
     if (idsToDelete.length === 0) return;
 
     if (!window.confirm(`Are you sure you want to delete ${idsToDelete.length} banner(s)?`)) {
@@ -267,22 +252,15 @@ const Banners = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/delete-multiple`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ids: idsToDelete }),
-      });
-
-      if (!response.ok) {
-        const errorResult = await response.json();
-        throw new Error(errorResult.error || `Failed with status: ${response.status}`);
+      // For simplicity, we just delete the first selected one if multi-delete isn't supported yet, or loop
+      for (const id of idsToDelete) {
+        await fetch(`${API_BASE_URL}/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
       }
 
-      const result = await response.json();
-      toast.success(result.message || `${idsToDelete.length} banner(s) deleted successfully.`);
-
+      toast.success(`${idsToDelete.length} banner(s) deleted successfully.`);
       setSelectedBannerIds([]);
       await fetchBanners();
 
@@ -321,7 +299,7 @@ const Banners = () => {
 
   const filteredBanners = useMemo(() => {
     return banners.filter((banner) =>
-      banner.title.toLowerCase().includes(searchTerm.toLowerCase())
+      (banner.title1 || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [banners, searchTerm]);
 
@@ -491,14 +469,10 @@ const Banners = () => {
                         disabled={isProcessing}
                       />
                     </th>
-                    <th className="p-4 text-left text-sm font-medium">
-                      Enable Mobile Device
-                    </th>
                     <th className="p-4 text-left text-sm font-medium">Image</th>
-                    <th className="p-4 text-left text-sm font-medium">Title</th>
-                    <th className="p-4 text-left text-sm font-medium">
-                      Created At
-                    </th>
+                    <th className="p-4 text-left text-sm font-medium">Main Title (Title 1)</th>
+                    <th className="p-4 text-left text-sm font-medium">Subtitle (Title 2)</th>
+                    <th className="p-4 text-left text-sm font-medium">Created At</th>
                     <th className="p-4">Actions</th>
                   </tr>
                 </thead>
@@ -515,17 +489,10 @@ const Banners = () => {
                         />
                       </td>
                       <td className="p-4">
-                        <Switch
-                          checked={banner.is_mobile_enabled}
-                          onCheckedChange={() => handleToggleMobile(banner.id, banner.is_mobile_enabled)}
-                          disabled={isProcessing}
-                        />
-                      </td>
-                      <td className="p-4">
                         <div className="h-10 w-16 overflow-hidden rounded-md border bg-muted flex items-center justify-center">
                           <img
-                            src={`${API_BASE_URL.replace('/api/banners', '')}${banner.image_url}`}
-                            alt={banner.title}
+                            src={imageUrl(banner.image_url)}
+                            alt={banner.title1}
                             className="object-cover w-full h-full"
                             onError={(e) => {
                               (e.target as HTMLImageElement).onerror = null;
@@ -534,9 +501,10 @@ const Banners = () => {
                           />
                         </div>
                       </td>
-                      <td className="p-4 text-sm font-medium">{banner.title}</td>
+                      <td className="p-4 text-sm font-medium">{banner.title1}</td>
+                      <td className="p-4 text-sm text-muted-foreground">{banner.title2 || '-'}</td>
                       <td className="p-4 text-sm text-muted-foreground">
-                        {new Date(banner.created_at).toLocaleDateString()}
+                        {new Date(banner.created_at || Date.now()).toLocaleDateString()}
                       </td>
                       <td className="p-4 flex items-center space-x-2">
                         {/* --- EDIT BUTTON --- */}
@@ -544,7 +512,7 @@ const Banners = () => {
                           variant="ghost"
                           size="sm"
                           className="text-primary"
-                          onClick={() => handleEditOpen(banner.id)}
+                          onClick={() => handleEditOpen(banner)}
                           disabled={isProcessing}
                         >
                           <Edit2 className="h-4 w-4 mr-1" />
@@ -648,16 +616,34 @@ const Banners = () => {
               <Label htmlFor="enableMobileCreate">Enable Mobile Device</Label>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="titleCreate">
-                Title<span className="text-destructive">*</span>
-              </Label>
+              <Label htmlFor="title1Create">Main Title (Title 1)<span className="text-destructive">*</span></Label>
               <Input
-                id="titleCreate"
-                placeholder="Enter your slide title"
-                value={createFormData.title}
-                onChange={(e) => setCreateFormData(prev => ({ ...prev, title: e.target.value }))}
+                id="title1Create"
+                placeholder="e.g. Madhura's Cafe"
+                value={createFormData.title1}
+                onChange={(e) => setCreateFormData(prev => ({ ...prev, title1: e.target.value }))}
                 disabled={isProcessing}
                 required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="title2Create">Subtitle (Title 2)</Label>
+              <Input
+                id="title2Create"
+                placeholder="e.g. 100% Ayurvedic Wellness"
+                value={createFormData.title2}
+                onChange={(e) => setCreateFormData(prev => ({ ...prev, title2: e.target.value }))}
+                disabled={isProcessing}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="descCreate">Description</Label>
+              <Input
+                id="descCreate"
+                placeholder="e.g. Experience the healing power..."
+                value={createFormData.description}
+                onChange={(e) => setCreateFormData(prev => ({ ...prev, description: e.target.value }))}
+                disabled={isProcessing}
               />
             </div>
             <div className="space-y-2">
@@ -696,7 +682,7 @@ const Banners = () => {
               <Button
                 type="submit"
                 className="bg-primary"
-                disabled={isProcessing || !createFormData.title || !createFormData.image}
+                disabled={isProcessing || !createFormData.title1 || !createFormData.image}
               >
                 {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Create'}
               </Button>
@@ -730,16 +716,34 @@ const Banners = () => {
                 <Label htmlFor="enableMobileEdit">Enable Mobile Device</Label>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="titleEdit">
-                  Title<span className="text-destructive">*</span>
-                </Label>
+                <Label htmlFor="title1Edit">Main Title (Title 1)<span className="text-destructive">*</span></Label>
                 <Input
-                  id="titleEdit"
-                  placeholder="Enter slide title"
-                  value={editFormData.title}
-                  onChange={(e) => setEditFormData(prev => ({ ...prev, title: e.target.value }))}
+                  id="title1Edit"
+                  placeholder="e.g. Madhura's Cafe"
+                  value={editFormData.title1}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, title1: e.target.value }))}
                   disabled={isProcessing}
                   required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="title2Edit">Subtitle (Title 2)</Label>
+                <Input
+                  id="title2Edit"
+                  placeholder="e.g. 100% Ayurvedic Wellness"
+                  value={editFormData.title2}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, title2: e.target.value }))}
+                  disabled={isProcessing}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="descEdit">Description</Label>
+                <Input
+                  id="descEdit"
+                  placeholder="e.g. Experience the healing power..."
+                  value={editFormData.description}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
+                  disabled={isProcessing}
                 />
               </div>
               <div className="space-y-2">
@@ -751,7 +755,7 @@ const Banners = () => {
                     <span className="text-sm text-muted-foreground">Current Image:</span>
                     <div className="h-10 w-16 rounded-md border bg-muted overflow-hidden">
                       <img
-                        src={`${API_BASE_URL.replace('/api/banners', '')}${editFormData.existingImageUrl}`}
+                        src={`http://localhost:3000${editFormData.existingImageUrl}`}
                         alt="Current Banner"
                         className="object-cover w-full h-full"
                       />
@@ -789,7 +793,7 @@ const Banners = () => {
                 <Button
                   type="submit"
                   className="bg-primary"
-                  disabled={isProcessing || !editFormData.title}
+                  disabled={isProcessing || !editFormData.title1}
                 >
                   {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}
                 </Button>

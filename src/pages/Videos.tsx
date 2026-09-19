@@ -16,7 +16,7 @@ import AdminLayout from "@/components/layout/AdminLayout";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { toast } from 'sonner'; // Assuming you use a toast/notification library
 import { Switch } from "@/components/ui/switch";
-import { apiUrl } from "@/lib/api";
+import { apiUrl } from "@/config/api";
 
 // --- Configuration ---
 const API_BASE_URL = apiUrl("/api/videos");

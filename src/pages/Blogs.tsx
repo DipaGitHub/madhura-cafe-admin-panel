@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Plus, X, Pencil, Trash2, Loader, CheckCircle } from 'lucide-react';
 import AdminLayout from "@/components/layout/AdminLayout";
-import { apiUrl, imageUrl } from "@/lib/api";
+import { apiUrl, imageUrl } from "@/config/api";
 
 // --- Rich Text Editor Component (from services page) ---
 interface RichTextEditorProps {

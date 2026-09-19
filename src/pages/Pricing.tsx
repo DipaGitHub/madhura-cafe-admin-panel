@@ -31,7 +31,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
-import { apiUrl } from "@/lib/api";
+import { apiUrl } from "@/config/api";
 
 // --- Configuration ---
 const API_BASE_URL = apiUrl("/api/pricing");

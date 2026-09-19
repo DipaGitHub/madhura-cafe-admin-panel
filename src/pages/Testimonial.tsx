@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Star, Loader2, PlusCircle, Trash2, Edit2, X, AlertTriangle } from 'lucide-react';
-import { apiUrl, imageUrl } from "@/lib/api";
+import { apiUrl, imageUrl } from "@/config/api";
 
 // --- API Configuration ---
 // Base URL for the admin testimonial routes

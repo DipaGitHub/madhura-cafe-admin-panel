@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, X, Pencil, Trash2, Loader, CheckCircle, Image as ImageIcon, Search, Download, ExternalLink, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import AdminLayout from "@/components/layout/AdminLayout";
-import { apiUrl } from "@/lib/api";
+import { apiUrl } from "@/config/api";
 
 // --- Interfaces for Type Safety ---
 interface Course {

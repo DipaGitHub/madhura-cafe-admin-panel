@@ -28,7 +28,10 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-bold">Widigitale Admin</h1>
+          <div className="flex items-center gap-3">
+            <img src="/madhura-cafe-logo.png" alt="Madhura's Cafe" className="h-8 w-auto object-contain" />
+            <h1 className="text-xl font-bold text-amber-400 font-serif">Madhura's Cafe Admin</h1>
+          </div>
           <div className="ml-auto flex items-center gap-4">
             <div className="relative hidden md:block w-64">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -54,6 +57,22 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         >
           <div className="overflow-y-auto h-full p-4">
             <nav className="space-y-1">
+              <NavLink
+                to="/menu-categories"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">📋</span>
+                Menu Categories
+              </NavLink>
+              <NavLink
+                to="/menu-items"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">🍽️</span>
+                Menu Items
+              </NavLink>
               {/* Main sections without home */}
               {/* <NavLink
                 to="/galleries"
@@ -72,28 +91,44 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 Logos
               </NavLink> */}
               <NavLink
+                to="/banners"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">🖼️</span>
+                Banners
+              </NavLink>
+              {/* <NavLink
+                to="/certifications"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">🌿</span>
+                Menus & Dishes
+              </NavLink> */}
+              <NavLink
                 to="/news"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
                 activeClassName="bg-muted font-medium"
               >
                 <span className="text-muted-foreground">📰</span>
-                Update
+                Updates
+              </NavLink>
+              <NavLink
+                to="/blogs"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">📝</span>
+                Blogs
               </NavLink>
               <NavLink
                 to="/faq"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
                 activeClassName="bg-muted font-medium"
               >
-                <span className="text-muted-foreground">📰</span>
+                <span className="text-muted-foreground">❓</span>
                 FAQ
-              </NavLink>
-              <NavLink
-                to="/certifications"
-                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
-                activeClassName="bg-muted font-medium"
-              >
-                <span className="text-muted-foreground">🔧</span>
-                Services
               </NavLink>
               {/* <NavLink
                 to="/managecertifications"
@@ -136,14 +171,14 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 Resources
               </NavLink> */}
 
-               <NavLink
+              <NavLink
                 to="/portfolio"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
                 activeClassName="bg-muted font-medium"
               >
                 <span className="text-muted-foreground">💬</span>
                 Portfolio
-              </NavLink> 
+              </NavLink>
               {/* <NavLink
                 to="/pricing"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
@@ -152,14 +187,14 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 <span className="text-muted-foreground">💬</span>
                 Pricing
               </NavLink> */ }
-               <NavLink
+              <NavLink
                 to="/logocarousel"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
                 activeClassName="bg-muted font-medium"
               >
                 <span className="text-muted-foreground">💬</span>
                 Logo Carousel
-              </NavLink> 
+              </NavLink>
               {/* <NavLink
                 to="/updates"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
@@ -191,6 +226,13 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                       activeClassName="bg-muted font-medium text-primary"
                     >
                       Banners
+                    </NavLink>
+                    <NavLink
+                      to="/about-us"
+                      className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                      activeClassName="bg-muted font-medium text-primary"
+                    >
+                      About Us
                     </NavLink>
                     <NavLink
                       to="/videos"

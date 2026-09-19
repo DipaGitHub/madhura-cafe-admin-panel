@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Edit2, Trash2, PlusCircle, Loader2 } from 'lucide-react';
 import AdminLayout from "@/components/layout/AdminLayout";
-import { apiUrl } from "@/lib/api";
+import { apiUrl } from "@/config/api";
 
 // --- BASE URL CONFIGURATION ---
 const API_BASE_URL = apiUrl("/api/faqs");

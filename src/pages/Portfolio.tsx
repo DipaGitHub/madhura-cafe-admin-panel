@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { toast } from "sonner";
-import { apiUrl, imageUrl } from "@/lib/api";
+import { apiUrl, imageUrl } from "@/config/api";
 
 interface Portfolio {
   id: number;

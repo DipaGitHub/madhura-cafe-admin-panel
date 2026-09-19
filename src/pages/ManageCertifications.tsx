@@ -8,7 +8,7 @@ import {
     ArrowLeft, Printer, ExternalLink, Shield, Paperclip, Trash2, File
 } from 'lucide-react';
 import AdminLayout from "@/components/layout/AdminLayout";
-import { apiUrl } from "@/lib/api";
+import { apiUrl } from "@/config/api";
 
 // --- TYPESCRIPT INTERFACES ---
 interface Application {
