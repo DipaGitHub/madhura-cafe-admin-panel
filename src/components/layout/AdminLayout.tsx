@@ -74,14 +74,14 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 Menu Items
               </NavLink>
               {/* Main sections without home */}
-              {/* <NavLink
+              <NavLink
                 to="/galleries"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
                 activeClassName="bg-muted font-medium"
               >
                 <span className="text-muted-foreground">📷</span>
                 Galleries
-              </NavLink> */}
+              </NavLink>
               {/* <NavLink
                 to="/logos"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
@@ -145,6 +145,30 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               >
                 <span className="text-muted-foreground">💬</span>
                 Testimonials
+              </NavLink>
+              <NavLink
+                to="/specialities"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">✨</span>
+                Specialties
+              </NavLink>
+              <NavLink
+                to="/opening-hours"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">⏰</span>
+                Opening Hours
+              </NavLink>
+              <NavLink
+                to="/contact-info"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">📞</span>
+                Contact Info
               </NavLink>
               <NavLink
                 to="/blogs"

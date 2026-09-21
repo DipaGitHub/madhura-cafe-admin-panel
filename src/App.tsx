@@ -24,6 +24,9 @@ import PortfolioPage from "./pages/Portfolio";
 import Pricing from "./pages/Pricing";
 import Test from "./pages/Test";
 import LogoCarousel from "./pages/LogoCarousel";
+import Specialities from "./pages/Specialities";
+import OpeningHours from "./pages/OpeningHours";
+import ContactInfo from "./pages/ContactInfo";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -46,6 +49,9 @@ const App = () => (
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/managecertifications" element={<ManageCertifications />} />
           <Route path="/testimonials" element={<Testimonial />} />
+          <Route path="/specialities" element={<Specialities />} />
+          <Route path="/opening-hours" element={<OpeningHours />} />
+          <Route path="/contact-info" element={<ContactInfo />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/menu-categories" element={<MenuCategories />} />
