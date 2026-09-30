@@ -25,6 +25,8 @@ const MenuItemForm = () => {
   const [isLoading, setIsLoading] = useState(isEdit);
   const [isSaving, setIsSaving] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     id: "",
     category_id: "",
@@ -77,6 +79,9 @@ const MenuItemForm = () => {
           is_featured: data.is_featured === 1 || data.is_featured === true,
           is_popular: data.is_popular === 1 || data.is_popular === true,
         });
+        if (data.image_url) {
+          setImagePreview(data.image_url.startsWith('http') ? data.image_url : imageUrl(data.image_url));
+        }
       } else {
         toast.error("Item not found");
         navigate("/menu-items");
@@ -91,6 +96,14 @@ const MenuItemForm = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      setImageFile(selectedFile);
+      setImagePreview(URL.createObjectURL(selectedFile));
+    }
   };
 
   const handleSwitchChange = (field: 'is_featured' | 'is_popular') => (checked: boolean) => {
@@ -141,23 +154,34 @@ const MenuItemForm = () => {
       let ingredientsArray = [];
       if (formData.ingredients) {
         try {
-          ingredientsArray = formData.ingredients.split(',').map(i => i.trim());
+          ingredientsArray = formData.ingredients.split(',').map(i => i.trim()).filter(Boolean);
         } catch(e) {}
       }
 
-      const payload = {
-        ...formData,
-        category_id: parseInt(formData.category_id),
-        ingredients: ingredientsArray
-      };
+      const submitData = new FormData();
+      submitData.append("id", formData.id);
+      submitData.append("category_id", formData.category_id);
+      submitData.append("title", formData.title);
+      submitData.append("short_description", formData.short_description);
+      submitData.append("benefit", formData.benefit);
+      submitData.append("price", formData.price);
+      submitData.append("long_description", formData.long_description);
+      submitData.append("ingredients", JSON.stringify(ingredientsArray));
+      submitData.append("is_featured", formData.is_featured ? "1" : "0");
+      submitData.append("is_popular", formData.is_popular ? "1" : "0");
+
+      if (imageFile) {
+        submitData.append("image", imageFile);
+      } else if (formData.image_url) {
+        submitData.append("image_url", formData.image_url);
+      }
 
       const url = isEdit ? apiUrl(`/api/menus/${id}`) : apiUrl("/api/menus");
       const method = isEdit ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: submitData,
       });
 
       const result = await response.json();
@@ -280,16 +304,33 @@ const MenuItemForm = () => {
                 />
               </div>
 
-              {/* Image URL */}
-              <div className="space-y-2">
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input 
-                  id="image_url" 
-                  name="image_url" 
-                  placeholder="https://..." 
-                  value={formData.image_url} 
-                  onChange={handleInputChange} 
-                />
+              {/* Image Upload */}
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="image">Item Image</Label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  {imagePreview && (
+                    <div className="relative h-24 w-24 rounded-lg overflow-hidden border bg-muted flex-shrink-0">
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        className="h-full w-full object-cover" 
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1 w-full space-y-1">
+                    <Input 
+                      id="image" 
+                      name="image" 
+                      type="file" 
+                      accept="image/*"
+                      onChange={handleImageChange} 
+                      className="cursor-pointer"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Upload JPEG, PNG, GIF, or WebP image.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
