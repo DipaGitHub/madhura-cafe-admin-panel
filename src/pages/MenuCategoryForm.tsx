@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import AdminLayout from "@/components/layout/AdminLayout";
-import { apiUrl } from "@/config/api";
+import { apiUrl, imageUrl } from "@/config/api";
 
 const MenuCategoryForm = () => {
   const { id } = useParams();
@@ -16,6 +16,8 @@ const MenuCategoryForm = () => {
 
   const [isLoading, setIsLoading] = useState(isEdit);
   const [isSaving, setIsSaving] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -42,6 +44,9 @@ const MenuCategoryForm = () => {
             sort_order: category.sort_order?.toString() || "0",
             image_url: category.image_url || "",
           });
+          if (category.image_url) {
+            setImagePreview(category.image_url.startsWith('http') ? category.image_url : imageUrl(category.image_url));
+          }
         } else {
           toast.error("Category not found");
           navigate("/menu-categories");
@@ -59,6 +64,14 @@ const MenuCategoryForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      setImageFile(selectedFile);
+      setImagePreview(URL.createObjectURL(selectedFile));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name) {
@@ -68,18 +81,23 @@ const MenuCategoryForm = () => {
 
     setIsSaving(true);
     try {
-      const payload = {
-        ...formData,
-        sort_order: parseInt(formData.sort_order) || 0,
-      };
+      const submitData = new FormData();
+      submitData.append("name", formData.name);
+      submitData.append("description", formData.description);
+      submitData.append("sort_order", (parseInt(formData.sort_order) || 0).toString());
+
+      if (imageFile) {
+        submitData.append("image", imageFile);
+      } else if (formData.image_url) {
+        submitData.append("image_url", formData.image_url);
+      }
 
       const url = isEdit ? apiUrl(`/api/menus/categories/${id}`) : apiUrl("/api/menus/categories");
       const method = isEdit ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: submitData,
       });
 
       const result = await response.json();
@@ -164,26 +182,31 @@ const MenuCategoryForm = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image_url">Parallax Banner Image URL</Label>
-              <Input 
-                id="image_url" 
-                name="image_url" 
-                type="url"
-                placeholder="https://images.unsplash.com/... or /images/parallax/filename.jpg" 
-                value={formData.image_url} 
-                onChange={handleInputChange} 
-              />
-              <p className="text-xs text-muted-foreground">This image will appear as the full-width parallax background behind this category on the Menu page.</p>
-              {formData.image_url && (
-                <div className="mt-2 rounded-md overflow-hidden border">
-                  <img
-                    src={formData.image_url}
-                    alt="Category banner preview"
-                    className="w-full h-32 object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              <Label htmlFor="image">Parallax Banner Image</Label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                {imagePreview && (
+                  <div className="relative h-24 w-36 rounded-lg overflow-hidden border bg-muted flex-shrink-0">
+                    <img 
+                      src={imagePreview} 
+                      alt="Category banner preview" 
+                      className="h-full w-full object-cover" 
+                    />
+                  </div>
+                )}
+                <div className="flex-1 w-full space-y-1">
+                  <Input 
+                    id="image" 
+                    name="image" 
+                    type="file" 
+                    accept="image/*"
+                    onChange={handleImageChange} 
+                    className="cursor-pointer"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Upload JPEG, PNG, GIF, or WebP image. This image will appear as the full-width parallax background behind this category on the Menu page.
+                  </p>
                 </div>
-              )}
+              </div>
             </div>
 
             <div className="flex justify-end gap-4 pt-4 border-t">

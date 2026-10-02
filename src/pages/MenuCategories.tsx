@@ -12,7 +12,7 @@ import { Edit, Trash2, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/components/layout/AdminLayout";
-import { apiUrl } from "@/config/api";
+import { apiUrl, imageUrl } from "@/config/api";
 
 const MenuCategories = () => {
   const navigate = useNavigate();
@@ -95,7 +95,7 @@ const MenuCategories = () => {
             <TableBody>
               {categories.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-6 text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
                     No categories found.
                   </TableCell>
                 </TableRow>
@@ -106,7 +106,7 @@ const MenuCategories = () => {
                     <TableCell>
                       {cat.image_url ? (
                         <img
-                          src={cat.image_url}
+                          src={cat.image_url.startsWith('http') ? cat.image_url : imageUrl(cat.image_url)}
                           alt={cat.name}
                           className="w-16 h-10 object-cover rounded border"
                           onError={(e) => { (e.target as HTMLImageElement).src = '/images/parallax/indian_thali_main_1789822013314.jpg'; }}
