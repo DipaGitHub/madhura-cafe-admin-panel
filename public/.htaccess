@@ -8,6 +8,7 @@
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /admin/
 
     # Never rewrite existing files or directories
     RewriteCond %{REQUEST_FILENAME} -f [OR]
