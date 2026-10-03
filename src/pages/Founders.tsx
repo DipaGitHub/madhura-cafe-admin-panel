@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Star, Loader2, PlusCircle, Trash2, Edit2, X, AlertTriangle } from 'lucide-react';
 import { apiUrl, imageUrl } from "@/config/api";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const BASE_URL = apiUrl("/api/founders");
 
@@ -46,6 +48,10 @@ const FounderForm: React.FC<FounderFormProps> = ({ initialData, onClose, onSucce
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
+    };
+
+    const handleEditorChange = (value: string) => {
+        setFormData(prev => ({ ...prev, description: value }));
     };
 
     const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,7 +125,13 @@ const FounderForm: React.FC<FounderFormProps> = ({ initialData, onClose, onSucce
                         </label>
                         <label className="block col-span-2">
                             <span className="text-sm font-medium text-gray-700">Description</span>
-                            <textarea name="description" rows={4} value={formData.description || ''} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2 border resize-none"></textarea>
+                            <ReactQuill 
+                                theme="snow"
+                                value={formData.description || ''}
+                                onChange={handleEditorChange}
+                                className="bg-white rounded-md mt-1"
+                                style={{ minHeight: '200px', paddingBottom: '40px' }}
+                            />
                         </label>
                         <label className="block">
                             <span className="text-sm font-medium text-gray-700">Image Quote (Overlay)</span>
@@ -252,7 +264,7 @@ export default function Founders() {
                                         </span>
                                     </div>
                                     <p className="text-sm text-indigo-600 font-medium mt-1">{founder.designation}</p>
-                                    <p className="text-sm text-gray-600 mt-2 line-clamp-3">{founder.description}</p>
+                                    <p className="text-sm text-gray-600 mt-2 line-clamp-3" dangerouslySetInnerHTML={{ __html: founder.description || '' }}></p>
                                 </div>
                                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-1 flex gap-1">
                                     <button onClick={() => handleEdit(founder)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="Edit"><Edit2 size={16} /></button>

@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { Loader2, Save, Image as ImageIcon } from "lucide-react";
 import { apiUrl, imageUrl } from "@/config/api";
 import AdminLayout from "@/components/layout/AdminLayout";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const API_URL = apiUrl("/api/specialities/admin");
 
@@ -76,6 +78,10 @@ const Specialities = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditorChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, description: value }));
   };
 
   const handleImage1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,12 +179,12 @@ const Specialities = () => {
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Description</label>
-            <Textarea 
-              name="description"
-              placeholder="Enter a compelling description..."
-              rows={4}
+            <ReactQuill 
+              theme="snow"
               value={formData.description}
-              onChange={handleInputChange}
+              onChange={handleEditorChange}
+              className="bg-white rounded-md mt-1"
+              style={{ minHeight: '200px', paddingBottom: '40px' }}
             />
           </div>
 

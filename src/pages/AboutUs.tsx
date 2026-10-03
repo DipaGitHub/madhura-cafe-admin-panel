@@ -7,11 +7,14 @@ import { toast } from "sonner";
 import { Loader2, Save, Image as ImageIcon } from "lucide-react";
 import { apiUrl, imageUrl } from "@/config/api";
 import AdminLayout from "@/components/layout/AdminLayout";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const API_URL = apiUrl("/api/aboutUs");
 
 interface AboutUsData {
   title: string;
+  short_description: string;
   description: string;
   image_url?: string;
   image?: File | null;
@@ -20,6 +23,7 @@ interface AboutUsData {
 const AboutUs = () => {
   const [formData, setFormData] = useState<AboutUsData>({
     title: "",
+    short_description: "",
     description: "",
     image_url: "",
     image: null,
@@ -42,6 +46,7 @@ const AboutUs = () => {
       if (result.success && result.data) {
         setFormData({
           title: result.data.title || "",
+          short_description: result.data.short_description || "",
           description: result.data.description || "",
           image_url: result.data.image_url || "",
           image: null,
@@ -64,6 +69,10 @@ const AboutUs = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleEditorChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -82,6 +91,7 @@ const AboutUs = () => {
     try {
       const submitData = new FormData();
       submitData.append("title", formData.title);
+      submitData.append("short_description", formData.short_description);
       submitData.append("description", formData.description);
       
       if (formData.image) {
@@ -147,15 +157,27 @@ const AboutUs = () => {
             />
           </div>
 
-          {/* Description */}
+          {/* Short Description */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Description</label>
-            <Textarea 
-              name="description"
-              placeholder="Enter the main body text for the About section..." 
-              className="min-h-[200px]"
+            <label className="text-sm font-medium">Short Description (For Homepage)</label>
+            <ReactQuill 
+              theme="snow"
+              value={formData.short_description}
+              onChange={(value) => handleEditorChange('short_description', value)}
+              className="bg-white rounded-md mb-8"
+              style={{ minHeight: '150px' }}
+            />
+          </div>
+
+          {/* Description */}
+          <div className="space-y-2 mt-10">
+            <label className="text-sm font-medium">Main Description</label>
+            <ReactQuill 
+              theme="snow"
               value={formData.description}
-              onChange={handleInputChange}
+              onChange={(value) => handleEditorChange('description', value)}
+              className="bg-white rounded-md"
+              style={{ minHeight: '300px' }}
             />
           </div>
 
