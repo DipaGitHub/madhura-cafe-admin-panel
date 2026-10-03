@@ -59,10 +59,6 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ initialData, onClose,
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
 
-    const handleEditorChange = (value: string) => {
-        setFormData(prev => ({ ...prev, comment: value }));
-    };
-
         if (type === 'checkbox') {
             setFormData(prev => ({
                 ...prev,
@@ -74,6 +70,10 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ initialData, onClose,
                 [name]: value,
             }));
         }
+    };
+
+    const handleEditorChange = (value: string) => {
+        setFormData(prev => ({ ...prev, comment: value }));
     };
 
     const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
