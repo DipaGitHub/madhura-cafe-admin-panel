@@ -18,6 +18,8 @@ interface AboutUsData {
   description: string;
   image_url?: string;
   image?: File | null;
+  menu_pdf_url?: string;
+  menu_pdf?: File | null;
 }
 
 const AboutUs = () => {
@@ -27,6 +29,8 @@ const AboutUs = () => {
     description: "",
     image_url: "",
     image: null,
+    menu_pdf_url: "",
+    menu_pdf: null,
   });
   
   const [isLoading, setIsLoading] = useState(true);
@@ -50,6 +54,8 @@ const AboutUs = () => {
           description: result.data.description || "",
           image_url: result.data.image_url || "",
           image: null,
+          menu_pdf_url: result.data.menu_pdf_url || "",
+          menu_pdf: null,
         });
         
         if (result.data.image_url) {
@@ -81,6 +87,13 @@ const AboutUs = () => {
     }
   };
 
+  const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setFormData((prev) => ({ ...prev, menu_pdf: file }));
+    }
+  };
+
   const handleSave = async () => {
     if (!formData.title || !formData.description) {
       toast.error("Title and description are required.");
@@ -96,6 +109,10 @@ const AboutUs = () => {
       
       if (formData.image) {
         submitData.append("image", formData.image);
+      }
+
+      if (formData.menu_pdf) {
+        submitData.append("menu_pdf", formData.menu_pdf);
       }
 
       const response = await fetch(API_URL, {
@@ -212,6 +229,35 @@ const AboutUs = () => {
                     <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
                     <span className="text-sm text-muted-foreground">No image selected</span>
                   </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Menu PDF Upload */}
+          <div className="space-y-4 pt-6 border-t border-muted">
+            <label className="text-sm font-medium">Menu PDF (Linked to "Explore Menu" button)</label>
+            <div className="flex flex-col sm:flex-row gap-6 items-center">
+              <div className="w-full sm:w-1/2">
+                <Input 
+                  type="file" 
+                  accept="application/pdf"
+                  onChange={handlePdfChange}
+                  className="mb-2"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Upload a PDF version of your menu.
+                </p>
+              </div>
+              <div className="w-full sm:w-1/2">
+                {formData.menu_pdf_url && !formData.menu_pdf ? (
+                  <a href={imageUrl(formData.menu_pdf_url)} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline text-sm flex items-center">
+                    View Current PDF
+                  </a>
+                ) : formData.menu_pdf ? (
+                  <span className="text-sm text-green-600 font-medium">New PDF selected: {formData.menu_pdf.name}</span>
+                ) : (
+                  <span className="text-sm text-muted-foreground">No PDF uploaded</span>
                 )}
               </div>
             </div>
