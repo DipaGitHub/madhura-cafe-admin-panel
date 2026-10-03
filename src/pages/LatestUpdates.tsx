@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, X, Pencil, Trash2, Loader, CheckCircle } from 'lucide-react';
 import AdminLayout from "@/components/layout/AdminLayout";
 import { apiUrl } from "@/config/api";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 // --- Interfaces for Type Safety ---
 
@@ -88,6 +90,10 @@ const LatestUpdates: React.FC = () => {
     // Handle input changes for the form
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleEditorChange = (value: string) => {
+        setFormData(prev => ({ ...prev, description: value }));
     };
 
     // Open the modal for creating a new update
@@ -245,9 +251,7 @@ const LatestUpdates: React.FC = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
                                 {update.title}
                             </td>
-                            <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                                {update.description}
-                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" dangerouslySetInnerHTML={{ __html: update.description }} />
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button
                                     onClick={() => openEditModal(update)}
@@ -324,16 +328,12 @@ const LatestUpdates: React.FC = () => {
                         {/* Description Field */}
                         <div className="mb-4">
                             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                            <textarea
-                                name="description"
-                                id="description"
-                                rows={4}
+                            <ReactQuill 
+                                theme="snow"
                                 value={formData.description}
-                                onChange={handleInputChange}
-                                className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 transition duration-150 border resize-none"
-                                placeholder="Describe the update in detail."
-                                required
-                                disabled={isSubmitting}
+                                onChange={handleEditorChange}
+                                className="bg-white rounded-md mt-1"
+                                style={{ minHeight: '150px', paddingBottom: '40px' }}
                             />
                         </div>
 

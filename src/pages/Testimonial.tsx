@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Star, Loader2, PlusCircle, Trash2, Edit2, X, AlertTriangle } from 'lucide-react';
 import { apiUrl, imageUrl } from "@/config/api";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 // --- API Configuration ---
 // Base URL for the admin testimonial routes
@@ -56,6 +58,10 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ initialData, onClose,
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
+
+    const handleEditorChange = (value: string) => {
+        setFormData(prev => ({ ...prev, comment: value }));
+    };
 
         if (type === 'checkbox') {
             setFormData(prev => ({
@@ -194,14 +200,13 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ initialData, onClose,
 
                     <label className="block">
                         <span className="text-sm font-medium text-gray-700">Comment <span className="text-red-500">*</span></span>
-                        <textarea
-                            name="comment"
-                            rows={4}
+                        <ReactQuill 
+                            theme="snow"
                             value={formData.comment}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-2 resize-none"
-                        ></textarea>
+                            onChange={handleEditorChange}
+                            className="bg-white rounded-md mt-1"
+                            style={{ minHeight: '150px', paddingBottom: '40px' }}
+                        />
                     </label>
 
                     {/* Image Upload Section */}
@@ -532,7 +537,7 @@ const Testimonial: React.FC = () => {
                                                     <Star key={i} size={14} fill={i < t.review_stars ? '#FBBF24' : '#E5E7EB'} strokeWidth={0} className="text-yellow-400" />
                                                 ))}
                                             </div>
-                                            <p className="text-sm text-gray-700 line-clamp-2">{t.comment}</p>
+                                            <div className="text-sm text-gray-700 line-clamp-2" dangerouslySetInnerHTML={{ __html: t.comment }} />
                                             <p className="text-xs text-gray-400 mt-1 truncate">Image Path: {t.image_url || 'None'}</p>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">

@@ -33,6 +33,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { apiUrl, imageUrl } from "@/config/api";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 // --- Configuration ---
 const API_BASE_URL = apiUrl("/api/banners");
@@ -638,12 +640,12 @@ const Banners = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="descCreate">Description</Label>
-              <Input
-                id="descCreate"
-                placeholder="e.g. Experience the healing power..."
+              <ReactQuill 
+                theme="snow"
                 value={createFormData.description}
-                onChange={(e) => setCreateFormData(prev => ({ ...prev, description: e.target.value }))}
-                disabled={isProcessing}
+                onChange={(value) => setCreateFormData(prev => ({ ...prev, description: value }))}
+                className="bg-white rounded-md mt-1"
+                style={{ minHeight: '150px', paddingBottom: '40px' }}
               />
             </div>
             <div className="space-y-2">
@@ -738,12 +740,12 @@ const Banners = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="descEdit">Description</Label>
-                <Input
-                  id="descEdit"
-                  placeholder="e.g. Experience the healing power..."
+                <ReactQuill 
+                  theme="snow"
                   value={editFormData.description}
-                  onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
-                  disabled={isProcessing}
+                  onChange={(value) => setEditFormData(prev => ({ ...prev, description: value }))}
+                  className="bg-white rounded-md mt-1"
+                  style={{ minHeight: '150px', paddingBottom: '40px' }}
                 />
               </div>
               <div className="space-y-2">

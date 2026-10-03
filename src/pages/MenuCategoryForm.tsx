@@ -8,6 +8,8 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { apiUrl, imageUrl } from "@/config/api";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const MenuCategoryForm = () => {
   const { id } = useParams();
@@ -62,6 +64,10 @@ const MenuCategoryForm = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditorChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, description: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,13 +164,12 @@ const MenuCategoryForm = () => {
 
             <div className="space-y-2">
               <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea 
-                id="description" 
-                name="description" 
-                placeholder="Brief description of the category..." 
-                value={formData.description} 
-                onChange={handleInputChange} 
-                rows={3}
+              <ReactQuill 
+                theme="snow"
+                value={formData.description}
+                onChange={handleEditorChange}
+                className="bg-white rounded-md mt-1"
+                style={{ minHeight: '150px', paddingBottom: '40px' }}
               />
             </div>
 

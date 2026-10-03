@@ -16,6 +16,8 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { apiUrl, imageUrl } from "@/config/api";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const MenuItemForm = () => {
   const { id } = useParams();
@@ -96,6 +98,10 @@ const MenuItemForm = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditorChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, long_description: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -350,13 +356,12 @@ const MenuItemForm = () => {
             {/* Long Description */}
             <div className="space-y-2">
               <Label htmlFor="long_description">Long Description (Details Page)</Label>
-              <Textarea 
-                id="long_description" 
-                name="long_description" 
-                placeholder="Full description for the item details page..." 
-                value={formData.long_description} 
-                onChange={handleInputChange} 
-                rows={4}
+              <ReactQuill 
+                theme="snow"
+                value={formData.long_description}
+                onChange={handleEditorChange}
+                className="bg-white rounded-md mt-1"
+                style={{ minHeight: '200px', paddingBottom: '40px' }}
               />
             </div>
 
