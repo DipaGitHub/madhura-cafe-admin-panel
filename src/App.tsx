@@ -11,6 +11,7 @@ import Certifications from "./pages/Certifications";
 import FAQ from "./pages/FAQ";
 import LatestUpdates from "./pages/LatestUpdates";
 import Testimonial from "./pages/Testimonial";
+import Founders from "./pages/Founders";
 import Blogs from "./pages/Blogs";
 import AboutUs from "./pages/AboutUs";
 import MenuCategories from "./pages/MenuCategories";
@@ -49,6 +50,7 @@ const App = () => (
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/managecertifications" element={<ManageCertifications />} />
           <Route path="/testimonials" element={<Testimonial />} />
+          <Route path="/founders" element={<Founders />} />
           <Route path="/specialities" element={<Specialities />} />
           <Route path="/opening-hours" element={<OpeningHours />} />
           <Route path="/contact-info" element={<ContactInfo />} />

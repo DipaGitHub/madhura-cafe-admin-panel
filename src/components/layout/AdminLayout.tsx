@@ -147,6 +147,14 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 Testimonials
               </NavLink>
               <NavLink
+                to="/founders"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">👔</span>
+                Founders
+              </NavLink>
+              <NavLink
                 to="/specialities"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
                 activeClassName="bg-muted font-medium"
