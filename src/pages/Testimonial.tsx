@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import AdminLayout from "@/components/layout/AdminLayout";
-import { Star, Loader2, PlusCircle, Trash2, Edit2, X, AlertTriangle } from 'lucide-react';
+import { Star, Loader2, PlusCircle, Trash2, Edit2, X, AlertTriangle, RefreshCw } from 'lucide-react';
 import { apiUrl, imageUrl } from "@/config/api";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -362,6 +362,28 @@ const Testimonial: React.FC = () => {
     const [editingTestimonial, setEditingTestimonial] = useState<TestimonialData | null>(null);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [testimonialToDelete, setTestimonialToDelete] = useState<number | null>(null);
+    const [syncing, setSyncing] = useState(false);
+
+    const syncGoogleReviews = async () => {
+        try {
+            setSyncing(true);
+            const res = await fetch(apiUrl("/api/testimonials/admin/sync-google-reviews"), {
+                method: 'POST'
+            });
+            const data = await res.json();
+            if (data.success || data.status === 200) {
+                alert(data.message || 'Google reviews synchronized successfully!');
+                await fetchTestimonials();
+            } else {
+                alert(data.error || 'Failed to sync Google reviews.');
+            }
+        } catch (err) {
+            console.error('Sync error:', err);
+            alert('Failed to connect to backend for Google reviews sync.');
+        } finally {
+            setSyncing(false);
+        }
+    };
 
     // Data Fetching (HTTP GET)
     const fetchTestimonials = useCallback(async () => {
@@ -483,13 +505,25 @@ const Testimonial: React.FC = () => {
             <AdminLayout>
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-semibold text-gray-800">Testimonials Management</h2>
-                    <button
-                        style={{ backgroundColor: '#0B6D8E' }}
-                        onClick={openCreateForm}
-                        className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition shadow-md"
-                    >
-                        <span>Add New Testimonial</span>
-                    </button>
+                    <div className="flex items-center space-x-3">
+                        <button
+                            onClick={syncGoogleReviews}
+                            disabled={syncing}
+                            className="flex items-center space-x-2 px-4 py-2 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition shadow-md disabled:opacity-50"
+                            title="Import & update latest reviews from Google Maps"
+                        >
+                            <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
+                            <span>{syncing ? 'Syncing...' : 'Sync Google Reviews'}</span>
+                        </button>
+                        <button
+                            style={{ backgroundColor: '#0B6D8E' }}
+                            onClick={openCreateForm}
+                            className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition shadow-md"
+                        >
+                            <PlusCircle className="w-4 h-4" />
+                            <span>Add New Testimonial</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -519,16 +553,21 @@ const Testimonial: React.FC = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900">{t.client_name}</div>
                                             <div className="text-xs text-gray-500">{t.client_position} at {t.client_company || 'N/A'}</div>
-                                            {t.image_url && (
+                                            {t.image_url ? (
                                                 <img
                                                     src={imageUrl(t.image_url || "")} alt={`${t.client_name} avatar`}
                                                     className="w-10 h-10 rounded-full mt-2 object-cover"
                                                     onError={(e) => {
                                                         (e.target as HTMLImageElement).onerror = null;
-                                                        // Placeholder image using the first letter of the client's name
                                                         (e.target as HTMLImageElement).src = `https://placehold.co/50x50/cccccc/ffffff?text=${t.client_name.charAt(0)}`;
                                                     }}
                                                 />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded-full mt-2 flex items-center justify-center font-bold text-xs bg-amber-100 text-amber-800 border border-amber-300 shadow-sm" title={t.client_name}>
+                                                    {t.client_name.trim().split(/\s+/).length > 1 
+                                                        ? (t.client_name.trim().split(/\s+/)[0][0] + t.client_name.trim().split(/\s+/)[1][0]).toUpperCase()
+                                                        : t.client_name.trim().slice(0, 2).toUpperCase()}
+                                                </div>
                                             )}
                                         </td>
                                         <td className="px-6 py-4 max-w-lg">

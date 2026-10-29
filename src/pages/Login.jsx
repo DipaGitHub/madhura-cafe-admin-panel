@@ -40,7 +40,7 @@ export default function Login() {
         textAlign: 'center'
       }}>
         <img
-          src="/madhura-cafe-logo.png"
+          src={`${import.meta.env.BASE_URL}madhura-cafe-logo.png`}
           alt="Madhura's Cafe"
           style={{
             height: '70px',

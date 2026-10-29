@@ -14,6 +14,7 @@ const API_URL = apiUrl("/api/aboutUs");
 
 interface AboutUsData {
   title: string;
+  home_title?: string;
   short_description: string;
   description: string;
   image_url?: string;
@@ -25,6 +26,7 @@ interface AboutUsData {
 const AboutUs = () => {
   const [formData, setFormData] = useState<AboutUsData>({
     title: "",
+    home_title: "",
     short_description: "",
     description: "",
     image_url: "",
@@ -50,6 +52,7 @@ const AboutUs = () => {
       if (result.success && result.data) {
         setFormData({
           title: result.data.title || "",
+          home_title: result.data.home_title || "",
           short_description: result.data.short_description || "",
           description: result.data.description || "",
           image_url: result.data.image_url || "",
@@ -104,6 +107,7 @@ const AboutUs = () => {
     try {
       const submitData = new FormData();
       submitData.append("title", formData.title);
+      submitData.append("home_title", formData.home_title || "");
       submitData.append("short_description", formData.short_description);
       submitData.append("description", formData.description);
       
@@ -165,11 +169,22 @@ const AboutUs = () => {
         <CardContent className="space-y-6">
           {/* Title */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Title</label>
+            <label className="text-sm font-medium">About Page Title</label>
             <Input 
               name="title"
               placeholder="e.g. Our Ayurvedic Heritage" 
               value={formData.title}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          {/* Homepage Title */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Homepage Title</label>
+            <Input 
+              name="home_title"
+              placeholder="e.g. Our Ayurvedic Heritage" 
+              value={formData.home_title || ""}
               onChange={handleInputChange}
             />
           </div>

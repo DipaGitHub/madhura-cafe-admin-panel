@@ -19,7 +19,7 @@ export default function Sidebar() {
   return (
     <aside className="admin-sidebar">
       <div className="sidebar-brand">
-        <img src="/madhura-cafe-logo.png" alt="Madhura's Cafe" className="sidebar-logo-img" />
+        <img src={`${import.meta.env.BASE_URL}madhura-cafe-logo.png`} alt="Madhura's Cafe" className="sidebar-logo-img" />
         <div>
           <h2 className="sidebar-brand-title">MADHURA'S</h2>
           <span style={{ fontSize: '0.72rem', letterSpacing: '0.2em', color: 'var(--admin-gold)' }}>ADMIN PANEL</span>

@@ -116,7 +116,9 @@ const MenuCategories = () => {
                       )}
                     </TableCell>
                     <TableCell className="font-medium">{cat.name}</TableCell>
-                    <TableCell className="text-muted-foreground max-w-xs truncate">{cat.description}</TableCell>
+                    <TableCell className="text-muted-foreground max-w-xs truncate">
+                      {cat.description?.replace(/<[^>]*>/g, '').trim() || "—"}
+                    </TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button variant="outline" size="icon" onClick={() => navigate(`/menu-categories/edit/${cat.id}`)}>
                         <Edit className="h-4 w-4" />

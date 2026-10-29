@@ -29,7 +29,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             <Menu className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-3">
-            <img src="/madhura-cafe-logo.png" alt="Madhura's Cafe" className="h-8 w-auto object-contain" />
+            <img src={`${import.meta.env.BASE_URL}madhura-cafe-logo.png`} alt="Madhura's Cafe" className="h-8 w-auto object-contain" />
             <h1 className="text-xl font-bold text-amber-400 font-serif">Madhura's Cafe Admin</h1>
           </div>
           <div className="ml-auto flex items-center gap-4">
@@ -97,6 +97,14 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               >
                 <span className="text-muted-foreground">🖼️</span>
                 Banners
+              </NavLink>
+              <NavLink
+                to="/page-banners"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+                activeClassName="bg-muted font-medium"
+              >
+                <span className="text-muted-foreground">🏞️</span>
+                Page Banners
               </NavLink>
               {/* <NavLink
                 to="/certifications"

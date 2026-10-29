@@ -89,7 +89,8 @@ const MenuCategoryForm = () => {
     try {
       const submitData = new FormData();
       submitData.append("name", formData.name);
-      submitData.append("description", formData.description);
+      const cleanDescription = formData.description?.replace(/<[^>]*>/g, '').trim() ? formData.description : "";
+      submitData.append("description", cleanDescription);
       submitData.append("sort_order", (parseInt(formData.sort_order) || 0).toString());
 
       if (imageFile) {

@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Banners from "./pages/Banners";
+import PageBanners from "./pages/PageBanners";
 import Videos from "./pages/Videos";
 import Galleries from "./pages/Galleries";
 import NotFound from "./pages/NotFound";
@@ -39,6 +40,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/banners" replace />} />
           <Route path="/banners" element={<Banners />} />
+          <Route path="/page-banners" element={<PageBanners />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/galleries" element={<Galleries />} />
           <Route path="/Test" element={<Test />} />
